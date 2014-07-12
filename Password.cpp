@@ -1,19 +1,74 @@
 #include "Password.h"
 using CSC2110::ListArrayIterator;
 
+#include "ReadFile.h"
+using CSC2110::ReadFile;
+
 #include <iostream>
 using namespace std;
 
+Password::Password()
+{
+    viable_words = new ListArray<String>();
+	all_words = new ListArray<String>();
+}
 
+Password::~Password()
+{
+    ListArrayIterator<Integer>* iter = viable_words->iterator();
+    while(iter->hasNext())
+    {
+        Integer* i = iter->next();
+        delete i;
+    }
+	ListArrayIterator<Integer>* iter = all_words->iterator();
+    while(iter->hasNext())
+    {
+        Integer* i = iter->next();
+        delete i;
+    }
+    delete viable_words;
+	delete all_words;
+}
 
+void Password::addWord(String* word)
+{ 
+    all_words->add(word);
+}
 
+void Password::guess(int try_password, int num_matches)
+{
+ //longest method
+    int counters = 0;
+	
+    ListArrayIterator<Integer>* iter = all_words->iterator();
+    while(iter->hasNext())
+    {
+        Integer* i = iter->next();
+	
+	if(getNumMatches(i,all_words->get(try_password)) == num_matches){
+	    viable_words->add(i);
+	}	
+    }
+	
+}
 
+int Password::getNumberOfPasswordsLeft()
+{
+    return (all_words->size() - viable_words->size());
+}
 
+void Password::displayViableWords()
+{
+    for(int x = 0; x < viable_words->size() - 1; x++){
+	    cout << endl << viable_words->get(x)->displayString();
+	}
+}
 
-
-
-
-
+String* Password::getOriginalWord(int index)
+{
+     return all_words->get(index-1);
+}
 
 int Password::bestGuess()
 {
