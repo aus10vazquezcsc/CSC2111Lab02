@@ -1,8 +1,13 @@
 #include "Password.h"
+
+#include "ListArrayIterator.h"
 using CSC2110::ListArrayIterator;
 
 #include "ReadFile.h"
 using CSC2110::ReadFile;
+
+#include "Text.h"
+using CSC2110::String;
 
 #include <iostream>
 using namespace std;
@@ -15,20 +20,20 @@ Password::Password()
 
 Password::~Password()
 {
-    ListArrayIterator<Integer>* iter = viable_words->iterator();
+    ListArrayIterator<String>* iter = viable_words->iterator();
     while(iter->hasNext())
     {
-        Integer* i = iter->next();
+        String* i = iter->next();
         delete i;
     }
-	ListArrayIterator<Integer>* iter = all_words->iterator();
-    while(iter->hasNext())
+	ListArrayIterator<String>* iters = all_words->iterator();
+    while(iters->hasNext())
     {
-        Integer* i = iter->next();
+        String* i = iters->next();
         delete i;
     }
-    delete viable_words;
-	delete all_words;
+    delete[] viable_words;
+	delete[] all_words;
 }
 
 void Password::addWord(String* word)
@@ -41,13 +46,13 @@ void Password::guess(int try_password, int num_matches)
  //longest method
     int counters = 0;
 	
-    ListArrayIterator<Integer>* iter = all_words->iterator();
+    ListArrayIterator<String>* iter = all_words->iterator();
     while(iter->hasNext())
     {
-        Integer* i = iter->next();
+        String* i = iter->next();
 	
-	if(getNumMatches(i,all_words->get(try_password)) == num_matches){
-	    viable_words->add(i);
+	    if(getNumMatches(i,all_words->get(try_password)) == num_matches){
+	        viable_words->add(i);
 	}	
     }
 	
@@ -58,10 +63,30 @@ int Password::getNumberOfPasswordsLeft()
     return (all_words->size() - viable_words->size());
 }
 
+int Password::getNumMatches(String* curr_word, String* word_guess)
+{
+    int curr_word_size = curr_word->length();
+	int word_guess_size = word_guess->length();
+	int char_matches = 0;
+	
+    if(curr_word->compare(word_guess) == 0) return curr_word_size; 
+    
+	else
+	    for(int x = 0; x < curr_word_size; x++){
+		    for(int y = 0; y < word_guess_size; y++){
+			
+		        if(curr_word->charAt(x) == word_guess->charAt(y))
+			        char_matches++;
+			}		
+		}
+	
+    return char_matches;
+}
+
 void Password::displayViableWords()
 {
     for(int x = 0; x < viable_words->size() - 1; x++){
-	    cout << endl << viable_words->get(x)->displayString();
+	    //cout << endl << viable_words->get(x)->displayString();
 	}
 }
 
